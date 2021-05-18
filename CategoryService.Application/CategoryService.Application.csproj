@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CategoryService.ApiContract\CategoryService.ApiContract.csproj" />
+    <ProjectReference Include="..\CategoryService.Domain\CategoryService.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Handler\Queries\" />
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,8 @@
 ﻿using CategoryService.ApiContract;
 using CategoryService.ApiContract.Requests.Commands;
+using CategoryService.ApiContract.Requests.Queries;
 using CategoryService.ApiContract.Responses.Commands;
+using CategoryService.ApiContract.Responses.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -20,7 +22,7 @@ namespace CategoryService.Api.Controllers
 
         [HttpPost("create")]
         [ProducesResponseType(200, Type = typeof(Result<CreateCategoryResponse>))]
-        public async Task<IActionResult> Create([FromBody] CreateCategoryCommand request)
+        public async Task<IActionResult> Create(CreateCategoryCommand request)
         {
             var result = await mediator.Send(request);
             return Ok(result);
@@ -28,7 +30,15 @@ namespace CategoryService.Api.Controllers
 
         [HttpPut("update")]
         [ProducesResponseType(200, Type = typeof(Result<UpdateCategoryResponse>))]
-        public async Task<IActionResult> Update([FromBody] UpdateCategoryCommand request)
+        public async Task<IActionResult> Update(UpdateCategoryCommand request)
+        {
+            var result = await mediator.Send(request);
+            return Ok(result);
+        }
+
+        [HttpGet("getbyid")]
+        [ProducesResponseType(200, Type = typeof(Result<GetByIdCategoryResponse>))]
+        public async Task<IActionResult> GetById([FromQuery] GetByIdCategoryQuery request)
         {
             var result = await mediator.Send(request);
             return Ok(result);

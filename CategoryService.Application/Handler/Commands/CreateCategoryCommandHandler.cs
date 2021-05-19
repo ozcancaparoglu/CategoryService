@@ -1,6 +1,7 @@
 ﻿using CategoryService.ApiContract;
 using CategoryService.ApiContract.Requests.Commands;
 using CategoryService.ApiContract.Responses.Commands;
+using CategoryService.Application.Assembler;
 using CategoryService.Domain;
 using CategoryService.Domain.CategoryAggregate;
 using MediatR;
@@ -13,11 +14,13 @@ namespace CategoryService.Application.Handler.Commands
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IGenericRepository<Category> categoryRepo;
+        private readonly ICategoryAssembler categoryAssembler;
 
-        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork)
+        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryAssembler categoryAssembler)
         {
             this.unitOfWork = unitOfWork;
             categoryRepo = this.unitOfWork.Repository<Category>();
+            this.categoryAssembler = categoryAssembler;
         }
 
         public async Task<Result<CreateCategoryResponse>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -28,17 +31,7 @@ namespace CategoryService.Application.Handler.Commands
 
             await unitOfWork.CommitAsync();
 
-            var dto = new CreateCategoryResponse
-            {
-                Id = entity.Id,
-                ParentId = entity.ParentId,
-                Name = entity.Name,
-                DisplayName = entity.DisplayName,
-                Description = entity.Description,
-                CreatedDate = entity.CreatedDate
-            };
-
-            return await Result<CreateCategoryResponse>.SuccessAsync(dto);
+            return await categoryAssembler.MapToCreateCategoryResponse(entity);
         }
     }
 }

@@ -12,6 +12,11 @@ namespace CategoryService.Container.Modules
               .AsImplementedInterfaces()
               .InstancePerLifetimeScope();
 
+            builder.RegisterAssemblyTypes(System.Reflection.Assembly.Load("CategoryService.Application"))
+              .Where(t => t.Name.EndsWith("Assembler"))
+              .AsImplementedInterfaces()
+              .InstancePerLifetimeScope();
+
             base.Load(builder);
         }
     }

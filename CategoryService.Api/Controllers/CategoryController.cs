@@ -1,10 +1,10 @@
 ﻿using CategoryService.ApiContract;
+using CategoryService.ApiContract.Contracts;
 using CategoryService.ApiContract.Requests.Commands;
 using CategoryService.ApiContract.Requests.Queries;
-using CategoryService.ApiContract.Responses.Commands;
-using CategoryService.ApiContract.Responses.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CategoryService.Api.Controllers
@@ -21,7 +21,7 @@ namespace CategoryService.Api.Controllers
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(200, Type = typeof(Result<CreateCategoryResponse>))]
+        [ProducesResponseType(200, Type = typeof(Result<CategoryCreateUpdateResponse>))]
         public async Task<IActionResult> Create(CreateCategoryCommand request)
         {
             var result = await mediator.Send(request);
@@ -29,16 +29,32 @@ namespace CategoryService.Api.Controllers
         }
 
         [HttpPut("update")]
-        [ProducesResponseType(200, Type = typeof(Result<UpdateCategoryResponse>))]
+        [ProducesResponseType(200, Type = typeof(Result<CategoryCreateUpdateResponse>))]
         public async Task<IActionResult> Update(UpdateCategoryCommand request)
         {
             var result = await mediator.Send(request);
             return Ok(result);
         }
 
-        [HttpGet("getbyid")]
-        [ProducesResponseType(200, Type = typeof(Result<GetByIdCategoryResponse>))]
+        [HttpGet("get-by-id")]
+        [ProducesResponseType(200, Type = typeof(Result<CategoryGetByIdResponse>))]
         public async Task<IActionResult> GetById([FromQuery] GetByIdCategoryQuery request)
+        {
+            var result = await mediator.Send(request);
+            return Ok(result);
+        }
+
+        [HttpGet("get-all")]
+        [ProducesResponseType(200, Type = typeof(Result<List<CategoryResponse>>))]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllCategoryQuery request)
+        {
+            var result = await mediator.Send(request);
+            return Ok(result);
+        }
+
+        [HttpGet("get-with-attributes")]
+        [ProducesResponseType(200, Type = typeof(Result<CategoryWithAttributesResponse>))]
+        public async Task<IActionResult> GetWithAttributes([FromQuery] GetWithAttributesCategoryQuery request)
         {
             var result = await mediator.Send(request);
             return Ok(result);

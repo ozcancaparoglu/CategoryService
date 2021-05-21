@@ -1,7 +1,7 @@
 ﻿using CategoryService.ApiContract;
+using CategoryService.ApiContract.Contracts;
 using CategoryService.ApiContract.Requests.Commands;
-using CategoryService.ApiContract.Responses.Commands;
-using CategoryService.Application.Assembler;
+using CategoryService.Application.AutoMapper;
 using CategoryService.Domain;
 using CategoryService.Domain.CategoryAggregate;
 using MediatR;
@@ -10,20 +10,22 @@ using System.Threading.Tasks;
 
 namespace CategoryService.Application.Handler.Commands
 {
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Result<CreateCategoryResponse>>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Result<CategoryCreateUpdateResponse>>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IGenericRepository<Category> categoryRepo;
-        private readonly ICategoryAssembler categoryAssembler;
+        private readonly IAutoMapperConfiguration autoMapper;
 
-        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryAssembler categoryAssembler)
+        private readonly IGenericRepository<Category> categoryRepo;
+
+        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper)
         {
             this.unitOfWork = unitOfWork;
+            this.autoMapper = autoMapper;
+
             categoryRepo = this.unitOfWork.Repository<Category>();
-            this.categoryAssembler = categoryAssembler;
         }
 
-        public async Task<Result<CreateCategoryResponse>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<Result<CategoryCreateUpdateResponse>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var entity = new Category(request.ParentId, request.Name, request.DisplayName, request.Description);
 
@@ -31,7 +33,7 @@ namespace CategoryService.Application.Handler.Commands
 
             await unitOfWork.CommitAsync();
 
-            return await categoryAssembler.MapToCreateCategoryResponse(entity);
+            return await Result<CategoryCreateUpdateResponse>.SuccessAsync(autoMapper.MapObject<Category, CategoryCreateUpdateResponse>(entity));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CategoryService.Domain.Common;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace CategoryService.Domain.CategoryAggregate
@@ -20,9 +21,14 @@ namespace CategoryService.Domain.CategoryAggregate
         private readonly List<CategoryAttribute> _categoryAttributes;
         public IReadOnlyCollection<CategoryAttribute> CategoryAttributes => _categoryAttributes;
 
+        private List<Category> _subCategories;
+        [NotMapped]
+        public List<Category> SubCategories => _subCategories;
+
         protected Category()
         {
             _categoryAttributes = new List<CategoryAttribute>();
+            _subCategories = new List<Category>();
         }
 
         public Category(int? parentId, string name, string displayName, string description) : this()
@@ -40,6 +46,8 @@ namespace CategoryService.Domain.CategoryAggregate
             DisplayName = displayName;
             Description = description;
         }
+
+        public void SetSubCategories(List<Category> subCategories) => _subCategories = subCategories;
 
         public CategoryAttribute VerifyOrAddCategoryAttribute(int attributeId, bool isRequired, bool isVariantable)
         {

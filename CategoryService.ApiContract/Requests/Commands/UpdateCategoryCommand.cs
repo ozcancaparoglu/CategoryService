@@ -1,9 +1,9 @@
-﻿using CategoryService.ApiContract.Responses.Commands;
+﻿using CategoryService.ApiContract.Contracts;
 using MediatR;
 
 namespace CategoryService.ApiContract.Requests.Commands
 {
-    public class UpdateCategoryCommand : IRequest<Result<UpdateCategoryResponse>>
+    public class UpdateCategoryCommand : IRequest<Result<CategoryCreateUpdateResponse>>
     {
         public int Id { get; set; }
 

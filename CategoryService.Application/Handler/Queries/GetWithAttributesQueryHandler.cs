@@ -10,15 +10,14 @@ using System.Threading.Tasks;
 
 namespace CategoryService.Application.Handler.Queries
 {
-    public class GetByIdCategoryQueryHandler : IRequestHandler<GetByIdCategoryQuery, Result<CategoryGetByIdResponse>>
+    public class GetWithAttributesQueryHandler : IRequestHandler<GetWithAttributesCategoryQuery, Result<CategoryWithAttributesResponse>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IAutoMapperConfiguration autoMapper;
 
         private readonly IGenericRepository<Category> categoryRepo;
 
-
-        public GetByIdCategoryQueryHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper)
+        public GetWithAttributesQueryHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper)
         {
             this.unitOfWork = unitOfWork;
             this.autoMapper = autoMapper;
@@ -26,14 +25,15 @@ namespace CategoryService.Application.Handler.Queries
             categoryRepo = this.unitOfWork.Repository<Category>();
         }
 
-        public async Task<Result<CategoryGetByIdResponse>> Handle(GetByIdCategoryQuery request, CancellationToken cancellationToken)
+
+        public async Task<Result<CategoryWithAttributesResponse>> Handle(GetWithAttributesCategoryQuery request, CancellationToken cancellationToken)
         {
-            var entity = await categoryRepo.GetById(request.Id);
+            var entity = await categoryRepo.FindByProperties(x => x.Id == request.Id, "CategoryAttributes");
 
             if (entity == null)
-                return await Result<CategoryGetByIdResponse>.FailureAsync("Invalid id");
+                return await Result<CategoryWithAttributesResponse>.FailureAsync("Invalid Id.");
 
-            return await Result<CategoryGetByIdResponse>.SuccessAsync(autoMapper.MapObject<Category, CategoryGetByIdResponse>(entity));
+            return await Result<CategoryWithAttributesResponse>.SuccessAsync(autoMapper.MapObject<Category, CategoryWithAttributesResponse>(entity));
         }
     }
 }

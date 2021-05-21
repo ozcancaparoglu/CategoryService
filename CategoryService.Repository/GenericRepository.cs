@@ -39,17 +39,51 @@ namespace CategoryService.Repository
             return await context.Set<T>().SingleOrDefaultAsync(match);
         }
 
+        public virtual async Task<T> FindByProperties(Expression<Func<T, bool>> match, string includeProperties = "")
+        {
+            IQueryable<T> query = context.Set<T>();
+
+            if (match != null)
+                query = query.Where(match);
+
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                query = query.Include(includeProperty);
+
+            return await query.SingleOrDefaultAsync();
+        }
+
         public virtual async Task<ICollection<T>> Filter(Expression<Func<T, bool>> match)
         {
             return await context.Set<T>().Where(match).ToListAsync();
         }
 
-        public async Task Add(T entity)
+        public virtual async Task<ICollection<T>> FilterWithProperties(Expression<Func<T, bool>> filter = null,
+           string includeProperties = "", Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
+           int? page = null, int? pageSize = null)
+        {
+            IQueryable<T> query = context.Set<T>();
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                query = query.Include(includeProperty);
+
+            if (orderBy != null)
+                query = orderBy(query);
+
+            if (page != null && pageSize != null)
+                query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
+
+            return await query.ToListAsync();
+        }
+
+        public virtual async Task Add(T entity)
         {
             await context.Set<T>().AddAsync(entity);
         }
 
-        public T Update(T entity)
+        public virtual T Update(T entity)
         {
             var entityEntry = context.Set<T>().Update(entity);
             return entityEntry.Entity;
@@ -60,7 +94,7 @@ namespace CategoryService.Repository
             return await context.Set<T>().CountAsync();
         }
 
-        public async Task<int> CountExpression(Expression<Func<T, bool>> predicate, bool isActive = true)
+        public virtual async Task<int> CountExpression(Expression<Func<T, bool>> predicate, bool isActive = true)
         {
             return await context.Set<T>().Where(predicate).CountAsync();
         }

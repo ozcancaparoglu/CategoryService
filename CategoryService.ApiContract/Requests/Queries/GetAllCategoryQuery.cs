@@ -1,10 +1,10 @@
 ﻿using CategoryService.ApiContract.Contracts;
 using MediatR;
+using System.Collections.Generic;
 
 namespace CategoryService.ApiContract.Requests.Queries
 {
-    public class GetByIdCategoryQuery : IRequest<Result<CategoryGetByIdResponse>>
+    public class GetAllCategoryQuery : IRequest<Result<List<CategoryResponse>>>
     {
-        public int Id { get; set; }
     }
 }

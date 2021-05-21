@@ -17,7 +17,11 @@ namespace CategoryService.Domain
         Task<int> Count();
         Task<int> CountExpression(Expression<Func<T, bool>> predicate, bool isActive = true);
         Task<ICollection<T>> Filter(Expression<Func<T, bool>> match);
+        Task<ICollection<T>> FilterWithProperties(Expression<Func<T, bool>> filter = null,
+           string includeProperties = "", Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+           int? page = null, int? pageSize = null);
         Task<T> Find(Expression<Func<T, bool>> match);
+        Task<T> FindByProperties(Expression<Func<T, bool>> match, string includeProperties = "");
         Task<ICollection<T>> GetAll();
         Task<T> GetById(int id);
         IQueryable<T> Table();

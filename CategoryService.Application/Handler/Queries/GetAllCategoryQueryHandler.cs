@@ -2,6 +2,7 @@
 using CategoryService.ApiContract.Contracts;
 using CategoryService.ApiContract.Requests.Queries;
 using CategoryService.Application.AutoMapper;
+using CategoryService.Application.CacheServices;
 using CategoryService.Application.Services;
 using CategoryService.Domain;
 using CategoryService.Domain.CategoryAggregate;
@@ -17,14 +18,19 @@ namespace CategoryService.Application.Handler.Queries
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IAutoMapperConfiguration autoMapper;
+        private readonly ICacheService cacheService;
         private readonly ICategoryService categoryService;
 
         private readonly IGenericRepository<Category> categoryRepo;
 
-        public GetAllCategoryQueryHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper, ICategoryService categoryService)
+        public GetAllCategoryQueryHandler(IUnitOfWork unitOfWork, 
+            IAutoMapperConfiguration autoMapper,
+            ICacheService cacheService,
+            ICategoryService categoryService)
         {
             this.unitOfWork = unitOfWork;
             this.autoMapper = autoMapper;
+            this.cacheService = cacheService;
             this.categoryService = categoryService;
 
             categoryRepo = this.unitOfWork.Repository<Category>();
@@ -33,7 +39,14 @@ namespace CategoryService.Application.Handler.Queries
 
         public async Task<Result<List<CategoryResponse>>> Handle(GetAllCategoryQuery request, CancellationToken cancellationToken)
         {
-            var allCategoryList = await categoryRepo.GetAll(); //TODO: Cache
+            var allCategoryList = new List<Category>();
+
+            if(!cacheService.TryGetValue(CacheConstants.CategoryCacheKey, out allCategoryList))
+            {
+                allCategoryList = (List<Category>)await categoryRepo.GetAll();
+                cacheService.Add(CacheConstants.CategoryCacheKey, allCategoryList, CacheConstants.CategoryCacheTime);
+            }
+
             var mainCategories = allCategoryList.Where(x => x.ParentId == null);
 
             foreach (var mainCategory in mainCategories)

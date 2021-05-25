@@ -36,6 +36,14 @@ namespace CategoryService.Api.Controllers
             return Ok(result);
         }
 
+        [HttpDelete("delete")]
+        [ProducesResponseType(200, Type = typeof(Result<object>))]
+        public async Task<IActionResult> Delete([FromQuery] DeleteCategoryCommand request)
+        {
+            var result = await mediator.Send(request);
+            return Ok(result);
+        }
+
         [HttpGet("get-by-id")]
         [ProducesResponseType(200, Type = typeof(Result<CategoryGetByIdResponse>))]
         public async Task<IActionResult> GetById([FromQuery] GetByIdCategoryQuery request)

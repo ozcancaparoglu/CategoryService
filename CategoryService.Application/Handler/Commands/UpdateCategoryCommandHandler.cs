@@ -15,26 +15,22 @@ namespace CategoryService.Application.Handler.Commands
         private readonly IUnitOfWork unitOfWork;
         private readonly IAutoMapperConfiguration autoMapper;
 
-        private readonly IGenericRepository<Category> categoryRepo;
-
         public UpdateCategoryCommandHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper)
         {
             this.unitOfWork = unitOfWork;
             this.autoMapper = autoMapper;
-
-            categoryRepo = this.unitOfWork.Repository<Category>();
         }
 
         public async Task<Result<CategoryCreateUpdateResponse>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var entity = await categoryRepo.GetById(request.Id);
+            var entity = await unitOfWork.Repository<Category>().GetById(request.Id);
 
             if (entity == null)
                 return await Result<CategoryCreateUpdateResponse>.FailureAsync("InvalidId"); //TODO : Exception messages standartization
                 
             entity.SetCategory(request.ParentId, request.Name, request.DisplayName, request.Description);
 
-            categoryRepo.Update(entity);
+            unitOfWork.Repository<Category>().Update(entity);
 
             await unitOfWork.CommitAsync();
 

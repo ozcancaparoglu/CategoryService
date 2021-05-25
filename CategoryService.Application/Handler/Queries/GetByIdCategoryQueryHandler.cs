@@ -14,21 +14,15 @@ namespace CategoryService.Application.Handler.Queries
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IAutoMapperConfiguration autoMapper;
-
-        private readonly IGenericRepository<Category> categoryRepo;
-
-
         public GetByIdCategoryQueryHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper)
         {
             this.unitOfWork = unitOfWork;
             this.autoMapper = autoMapper;
-
-            categoryRepo = this.unitOfWork.Repository<Category>();
         }
 
         public async Task<Result<CategoryGetByIdResponse>> Handle(GetByIdCategoryQuery request, CancellationToken cancellationToken)
         {
-            var entity = await categoryRepo.GetById(request.Id);
+            var entity = await unitOfWork.Repository<Category>().GetById(request.Id);
 
             if (entity == null)
                 return await Result<CategoryGetByIdResponse>.FailureAsync("Invalid id");

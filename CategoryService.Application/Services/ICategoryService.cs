@@ -6,6 +6,8 @@ namespace CategoryService.Application.Services
 {
     public interface ICategoryService
     {
-        Task<List<Category>> ChildCategories(int mainId, ICollection<Category> allCategories);
+        Task<List<Category>> GetAllCategories();
+        Task<List<Category>> ChildCategories(int mainId);
+        Task<bool> CheckIfCategoryLeaf(int categoryId);
     }
 }

@@ -14,22 +14,17 @@ namespace CategoryService.Application.Handler.Commands
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IAutoMapperConfiguration autoMapper;
-
-        private readonly IGenericRepository<Category> categoryRepo;
-
         public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper)
         {
             this.unitOfWork = unitOfWork;
             this.autoMapper = autoMapper;
-
-            categoryRepo = this.unitOfWork.Repository<Category>();
         }
 
         public async Task<Result<CategoryCreateUpdateResponse>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var entity = new Category(request.ParentId, request.Name, request.DisplayName, request.Description);
 
-            await categoryRepo.Add(entity);
+            await unitOfWork.Repository<Category>().Add(entity);
 
             await unitOfWork.CommitAsync();
 

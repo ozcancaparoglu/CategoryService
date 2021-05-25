@@ -15,20 +15,16 @@ namespace CategoryService.Application.Handler.Queries
         private readonly IUnitOfWork unitOfWork;
         private readonly IAutoMapperConfiguration autoMapper;
 
-        private readonly IGenericRepository<Category> categoryRepo;
-
         public GetWithAttributesQueryHandler(IUnitOfWork unitOfWork, IAutoMapperConfiguration autoMapper)
         {
             this.unitOfWork = unitOfWork;
             this.autoMapper = autoMapper;
-
-            categoryRepo = this.unitOfWork.Repository<Category>();
         }
 
 
         public async Task<Result<CategoryWithAttributesResponse>> Handle(GetWithAttributesCategoryQuery request, CancellationToken cancellationToken)
         {
-            var entity = await categoryRepo.FindByProperties(x => x.Id == request.Id, "CategoryAttributes");
+            var entity = await unitOfWork.Repository<Category>().FindByProperties(x => x.Id == request.Id, "CategoryAttributes");
 
             if (entity == null)
                 return await Result<CategoryWithAttributesResponse>.FailureAsync("Invalid Id.");

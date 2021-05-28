@@ -49,18 +49,15 @@ namespace CategoryService.Domain.CategoryAggregate
 
         public void SetSubCategories(List<Category> subCategories) => _subCategories = subCategories;
 
-        public CategoryAttribute VerifyOrAddCategoryAttribute(int attributeId, bool isRequired, bool isVariantable)
+        public void VerifyOrAddCategoryAttribute(int attributeId, bool isRequired, bool isVariantable)
         {
-            var existing = _categoryAttributes.SingleOrDefault(x => x.AttributeId == attributeId);
+            if (!_categoryAttributes.Any(x => x.AttributeId == attributeId))
+            {
+                var newEntry = new CategoryAttribute(Id, attributeId, isRequired, isVariantable);
 
-            if (existing != null)
-                return existing;
+                _categoryAttributes.Add(newEntry);
+            }
 
-            var newEntry = new CategoryAttribute(Id, attributeId, isRequired, isVariantable);
-
-            _categoryAttributes.Add(newEntry);
-
-            return newEntry;
         }
     }
 }

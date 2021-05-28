@@ -1,6 +1,5 @@
 ﻿using CategoryService.Domain;
 using CategoryService.Domain.Common;
-using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -99,22 +98,17 @@ namespace CategoryService.Repository
             return await context.Set<T>().Where(predicate).CountAsync();
         }
 
-        public virtual async Task BulkUpdate(List<T> entities)
+        public virtual async Task BulkUpdate(ICollection<T> entities)
         {
             await context.BulkUpdateAsync(entities);
         }
 
-        public virtual async Task BulkInsertOrUpdate(List<T> entities)
-        {
-            await context.BulkInsertOrUpdateAsync(entities);
-        }
-
-        public virtual async Task BulkInsert(List<T> entities)
+        public virtual async Task BulkInsert(ICollection<T> entities)
         {
             await context.BulkInsertAsync(entities);
         }
 
-        public virtual async Task BulkDelete(List<T> entities)
+        public virtual async Task BulkDelete(ICollection<T> entities)
         {
             await context.BulkDeleteAsync(entities);
         }

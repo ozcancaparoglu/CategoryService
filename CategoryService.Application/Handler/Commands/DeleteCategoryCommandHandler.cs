@@ -36,7 +36,9 @@ namespace CategoryService.Application.Handler.Commands
 
             var relatedEntities = await unitOfWork.Repository<CategoryAttribute>().Filter(x => x.CategoryId == request.Id);
 
-            await unitOfWork.Repository<CategoryAttribute>().BulkDelete(relatedEntities.ToList());
+            relatedEntities.ToList().ForEach(x => x.Delete());
+
+            await unitOfWork.Repository<CategoryAttribute>().BulkUpdate(relatedEntities);
 
             #endregion
 

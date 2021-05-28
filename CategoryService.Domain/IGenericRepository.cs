@@ -10,10 +10,9 @@ namespace CategoryService.Domain
     public interface IGenericRepository<T> where T : DomainBase
     {
         Task Add(T entity);
-        Task BulkDelete(List<T> entities);
-        Task BulkInsert(List<T> entities);
-        Task BulkInsertOrUpdate(List<T> entities);
-        Task BulkUpdate(List<T> entities);
+        Task BulkDelete(ICollection<T> entities);
+        Task BulkInsert(ICollection<T> entities);
+        Task BulkUpdate(ICollection<T> entities);
         Task<int> Count();
         Task<int> CountExpression(Expression<Func<T, bool>> predicate, bool isActive = true);
         Task<ICollection<T>> Filter(Expression<Func<T, bool>> match);
